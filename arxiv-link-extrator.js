@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         arxiv Link Extractor
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.3
 // @description  在打开axriv.org的某篇论文,自动在新标签页打开对应论文的paper.cool(kimi总结)和alphaxiv.org(论文讨论)内容 
 // @author       flaging
 // @match        https://arxiv.org/abs/*
