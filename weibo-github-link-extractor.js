@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Weibo GitHub Link Extractor
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  在微博正文中提取github.com下的网址，并在页面上显示一个带超链接的按钮，点击能够跳转到对应的网址上去。
 // @author       flaging
 // @match        https://www.weibo.com
