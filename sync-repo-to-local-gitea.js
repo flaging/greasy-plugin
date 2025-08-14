@@ -1,16 +1,19 @@
 // ==UserScript==
-// @name         Sync Github to Local Gitea
+// @name         Sync Repo to Local Gitea
 // @namespace    https://github.com/flaging/greasy-plugin.git
 // @version      1.0
 // @description  Add a button to mirror the current repository to Gitea
-// @author       tamina
+// @author       flaging
 // @match        https://github.com/*/*
+// @match        https://gitee.com/*/*
+// @match        https://gitlab.com/*/*
 // @icon         https://www.google.com/s2/favicons?domain=github.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @run-at       document-idle
 // ==/UserScript==
+
 
 (function() {
   'use strict';
@@ -24,8 +27,11 @@
       const repoPath = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/|$)/);
       if (repoPath) {
           // Get the username and repository name from the URL
-          const username = repoPath[1];
+          const owner = repoPath[1];
           const repo = repoPath[2];
+
+          // Determine the platform based on the current URL
+          const platform = getPlatform();
 
           // Create the mirror button
           const mirrorButton = document.createElement('button');
@@ -34,18 +40,13 @@
           mirrorButton.style.bottom = '20px';
           mirrorButton.style.right = '70px';
           mirrorButton.style.zIndex = '9999';
-          mirrorButton.title = 'Mirror Repository to Gitea';
+          mirrorButton.title = `Mirror Repository to Gitea`;
 
           // Add the Emoji light bulb icon
-          mirrorButton.textContent = '💡 Mirror to Gitea';
+          mirrorButton.textContent = `💡 Mirror to Gitea`;
 
           // Append the button to the page
-          const repoHeader = document.querySelector('.BorderGrid-cell');
-          if (repoHeader) {
-              repoHeader.appendChild(mirrorButton);
-          } else {
-              document.body.appendChild(mirrorButton);
-          }
+          document.body.appendChild(mirrorButton);
 
           // Add click event listener to the button
           mirrorButton.addEventListener('click', () => {
@@ -53,18 +54,18 @@
                   alert('Please configure Gitea Base URL and Token first.');
                   openConfigModal();
               } else {
-                  createMirrorInGitea(username, repo);
+                  createMirrorInGitea(owner, repo, platform);
               }
           });
       }
   }
 
-  function createMirrorInGitea(owner, repo) {
+  function createMirrorInGitea(owner, repo, platform) {
       const payload = {
           clone_addr: `https://github.com/${owner}/${repo}`,
           description: '',
           repo_name: repo,
-          repo_owner: 'github',
+          repo_owner: platform,
           private: false,
           auto_init: false,
           mirror: true,
@@ -180,7 +181,20 @@
       document.body.appendChild(modalContainer);
   }
 
+  function getPlatform() {
+      const host = window.location.host;
+      if (host.includes('github')) {
+          return 'github';
+      } else if (host.includes('gitee')) {
+          return 'gitee';
+      } else if (host.includes('gitlab')) {
+          return 'gitlab';
+      } else if (host.includes('gitea')) {
+          return 'gitea';
+      }
+      return 'unknown';
+  }
+
   // Add the mirror button when the page loads
   window.addEventListener('load', addMirrorButton);
 })();
-
